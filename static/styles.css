@@ -1,0 +1,77 @@
+  nav
+{
+  height: 40px;
+  background-color: #ffa500;
+  }
+.navbar
+{
+    box-shadow: 0 0px 0px 1px rgba(0,0,0,.8);
+}
+nav .nav-link
+{
+  color: #000;
+}
+
+nav .nav-link:hover
+{
+  color: #eee
+}
+
+.logo-image{
+   width: 40px;
+   height: 40px;
+   border-radius: 50%;
+   overflow: hidden;
+}
+
+.p-5
+{
+  background: #eee;
+  max-width: 800px;
+  margin: 40px auto;
+  box-shadow: 0 4px 0px #333;
+  border-radius: 25px;
+}
+
+.form
+{
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  max-width: 500px;
+  margin: 0 auto 20px;
+  padding: 60px;
+  text-align: center;
+  box-shadow: 0 4px 0px #333;
+  border-radius: 25px;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+}
+
+.form input {
+  background: #eee;
+  outline: 0;
+  width: 100%;
+  border: solid;
+  border-color: #ffa500;
+  margin: 0 0 25px;
+  padding: 15px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+.form button {
+  text-transform: uppercase;
+  background: #ffa500;
+  color: #000;
+  width: 40%;
+  border: 0;
+  padding: 10px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#register-select
+{
+  margin-bottom: 10px;
+}

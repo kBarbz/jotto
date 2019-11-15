@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Log In
+{% endblock %}
+
+{% block main %}
+  <div class="registration-page">
+    <div class="form">
+      <form class="register" action="/register" method="post">
+        <input autocomplete="off" autofocus  type="text" name="username" placeholder="username"/>
+        <input type="password" name="password" placeholder="password"/>
+        <input type="password" name="confirmation" placeholder="confirm password"/>
+        <select id="register-select" class="form-control" name="symbol" required>
+          <option disabled selected value="">Secret Question</option>
+          <option value="pet">Name of your first pet?</option>
+          <option value="maiden">Mother's maiden name?</option>
+          <option value="friend">Best friend's name?</option>
+          <option value="tv">Favourite TV Show?</option>
+          <option value="middle">Your middle name?</option>
+        </select>
+        <input type="text" name="answer" placeholder="answer"/>
+        <button class="btn btn-primary" type="submit">login</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

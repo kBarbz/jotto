@@ -3,6 +3,7 @@ from flask_session import Session
 from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
+import sqlite3
 
 # Configure application **CS50 code**
 app = Flask(__name__)
@@ -32,7 +33,6 @@ c = conn.cursor()
 
 # Show homepage with instructions and Start Game menu
 @app.route("/")
-@login_required
 def index():
     return render_template("index.html")
 
@@ -63,7 +63,7 @@ def login():
             return render_template("error.html", error_desc = "Failed finding user")
 
         # Remember which user has logged in
-        session["user_id"] = rows[0]["id"]
+        session["user_id"] = user[0]["id"]
 
         # Redirect user to home page
         return redirect("/")
@@ -91,17 +91,19 @@ def register():
     if request.method == "POST":
          # Ensure username was submitted
         if not request.form.get("username"):
-            return TODO
+            return render_template("error.html", error_desc = "Empty username field")
 
-        elif not request.form.get("email"):
-            return TODO
-
-        elif not request.form.get("email-confirmation"):
-            return TODO
+        elif not request.form.get("answer"):
+            return render_template("error.html", error_desc = "Empty secret question answer field")
 
         # Ensure passwords were submitted
         elif not request.form.get("password"):
-            return TODO
+            return render_template("error.html", error_desc = "Empty password field")
 
         elif not request.form.get("pass-confirmation"):
-            return TODO
+            return render_template("error.html", error_desc = "Empty confirmation field")
+
+            
+        return redirect("/")
+    else:
+        return render_template("register.html")
