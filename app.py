@@ -55,7 +55,7 @@ def login():
             return render_template("error.html", error_desc = "Empty password field")
 
         # Query database for username
-        user = c.execute("SELECT * FROM users WHERE username = :username",
+        user = c.execute("SELECT * FROM users WHERE username = ?",
                           username=request.form.get("username"))
 
         # Ensure username exists and password is correct
@@ -89,21 +89,37 @@ def register():
 
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
-         # Ensure username was submitted
+
+        # Ensure username was submitted
         if not request.form.get("username"):
             return render_template("error.html", error_desc = "Empty username field")
 
+        # Ensure question was selected and answer was submitted
         elif not request.form.get("answer"):
             return render_template("error.html", error_desc = "Empty secret question answer field")
+        elif not request.form.get("question"):
+                return render_template("error.html", error_desc = "Empty secret question answer field")
 
         # Ensure passwords were submitted
         elif not request.form.get("password"):
             return render_template("error.html", error_desc = "Empty password field")
-
         elif not request.form.get("pass-confirmation"):
             return render_template("error.html", error_desc = "Empty confirmation field")
 
-            
-        return redirect("/")
+        # Create hash based on users confirmed password
+        pass_hash = generate_password_hash(request.form.get("confirmation"))
+
+        # Check to see if username is valid and update users password in database
+        sql = "INSERT INTO users (username, hash) VALUES (?, ?)"
+        val = (request.form.get("username"), pass_hash)
+        result = c.execute(sql, val)
+        if not result:
+            return render_template("error.html", error_desc = "Invalid username")
+        else:
+            user = c.execute("SELECT * FROM users WHERE username = ?",
+                              username=request.form.get("username"))
+                              session["user_id"] = user[0]["id"]
+                              return redirect("/")
+
     else:
         return render_template("register.html")
