@@ -64,15 +64,16 @@ def login():
             return render_template("error.html", error_desc = "Empty password field")
 
         # Query database for username
-        c.execute("SELECT username FROM users WHERE username =:username", {"username": request.form.get("username")})
+        c.execute("SELECT * FROM users WHERE username =:username", {"username": request.form.get("username")})
         user = c.fetchone()
 
         # Ensure username exists and password is correct
-        if len(user) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
+        if user is None or not check_password_hash(user[2], request.form.get("password")):
             return render_template("error.html", error_desc = "Failed finding user")
 
         # Remember which user has logged in
-        session["user_id"] = user[0]
+        session["user_id"] = user[1]
+        conn.close()
 
         # Redirect user to home page
         return redirect("/")
@@ -94,7 +95,6 @@ def logout():
 
 # Register as a user
 @app.route("/register", methods=["GET", "POST"])
-@login_required
 def register():
 
     # User reached route via POST (as by submitting a form via POST)
@@ -121,20 +121,59 @@ def register():
         elif not request.form.get("confirmation"):
             return render_template("error.html", error_desc = "Empty confirmation field")
 
-        # Create hash based on users confirmed password
+        # Create hashof password and answer based on users input
         pass_hash = generate_password_hash(request.form.get("confirmation"))
+        answer_hash = generate_password_hash(request.form.get("answer"))
 
         # Check to see if username is valid and update users password in database
-        sql = "INSERT INTO users (username, hash, question, answer) VALUES (?, ?, ?, ?)"
-        val = (request.form.get("username"), pass_hash, request.form.get("question"), request.form.get("answer"))
-        result = c.execute(sql, val)
+        c.execute("INSERT INTO users (username, hash, question, answer) VALUES (:username, :hash, :question, :answer)", {"username": request.form.get("username"), "hash": pass_hash, "question": request.form.get("question"), "answer": answer_hash})
+        """""""" TODO """"""""
         if not result:
             return render_template("error.html", error_desc = "Invalid username")
         else:
+            conn = sqlite3.connect(file)
+            c = conn.cursor()
             c.execute("SELECT username FROM users WHERE username =:username", {"username": request.form.get("username")})
             user = c.fetchone()
             session["user_id"] = user[0]
+            conn.close()
             return redirect("/")
 
     else:
         return render_template("register.html")
+
+# Change password while logged in
+@app.route("/password", methods=["GET", "POST"])
+@login_required
+def password():
+
+    # Set up use of database
+    file = "jotto-db"
+    conn = sqlite3.connect(file)
+    c = conn.cursor()
+
+    if request.method == "POST":
+        c.execute("SELECT hash FROM users where id=:id", {"username": session["user_id"]})
+        user_hash = c.fetchone()
+
+        # Ensure passwords were submitted
+        if not request.form.get("old_password"):
+            return render_template("error.html", error_desc = "Empty old password field")
+        elif not request.form.get("new_password"):
+            return render_template("error.html", error_desc = "Empty new password field")
+        elif not request.form.get("confirmation"):
+            return render_template("error.html", error_desc = "Empty confirmation field")
+
+        if request.form.get("new_password") != request.form.get("confirmation"):
+            return render_template("error.html", error_desc = "Passwords don't match")
+
+        if not check_password_hash((user_hash[0]), request.form.get("old_password")):
+            return render_template("error.html", error_desc = "Old password incorrect")
+        else:
+            pass_hash = generate_password_hash(request.form.get("confirmation"))
+            c.execute("UPDATE users SET hash =:hash WHERE id =:id", {"hash": pass_hash, "id": session["user_id"]})
+            conn.close()
+
+        return redirect('/')
+    else:
+        return render_template("password.html")
