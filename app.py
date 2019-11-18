@@ -1,5 +1,6 @@
 from flask import Flask, flash, jsonify, redirect, render_template, request, session
 from flask_session import Session
+from functools import wraps
 from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -25,8 +26,18 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
+# Decorator function to require log-in
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get("user_id") is None:
+            return redirect("/login")
+        return f(*args, **kwargs)
+    return decorated_function
+
 # Show homepage with instructions and Start Game menu
 @app.route("/")
+@login_required
 def index():
     return render_template("index.html")
 
@@ -83,6 +94,7 @@ def logout():
 
 # Register as a user
 @app.route("/register", methods=["GET", "POST"])
+@login_required
 def register():
 
     # User reached route via POST (as by submitting a form via POST)
