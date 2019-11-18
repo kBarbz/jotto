@@ -25,12 +25,6 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-# Set up use of database
-file = "jotto-db"
-conn = sqlite3.connect(file)
-c = conn.cursor()
-
-
 # Show homepage with instructions and Start Game menu
 @app.route("/")
 def index():
@@ -39,6 +33,10 @@ def index():
 # Login page and process **CS50 code**
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    # Set up use of database
+    file = "jotto-db"
+    conn = sqlite3.connect(file)
+    c = conn.cursor()
 
     # Forget any user_id
     session.clear()
@@ -55,15 +53,15 @@ def login():
             return render_template("error.html", error_desc = "Empty password field")
 
         # Query database for username
-        user = c.execute("SELECT * FROM users WHERE username = ?",
-                          username=request.form.get("username"))
+        c.execute("SELECT username FROM users WHERE username =:username", {"username": request.form.get("username")})
+        user = c.fetchone()
 
         # Ensure username exists and password is correct
         if len(user) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
             return render_template("error.html", error_desc = "Failed finding user")
 
         # Remember which user has logged in
-        session["user_id"] = user[0]["id"]
+        session["user_id"] = user[0]
 
         # Redirect user to home page
         return redirect("/")
@@ -90,6 +88,11 @@ def register():
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
 
+        # Set up use of database
+        file = "jotto-db"
+        conn = sqlite3.connect(file)
+        c = conn.cursor()
+
         # Ensure username was submitted
         if not request.form.get("username"):
             return render_template("error.html", error_desc = "Empty username field")
@@ -103,23 +106,23 @@ def register():
         # Ensure passwords were submitted
         elif not request.form.get("password"):
             return render_template("error.html", error_desc = "Empty password field")
-        elif not request.form.get("pass-confirmation"):
+        elif not request.form.get("confirmation"):
             return render_template("error.html", error_desc = "Empty confirmation field")
 
         # Create hash based on users confirmed password
         pass_hash = generate_password_hash(request.form.get("confirmation"))
 
         # Check to see if username is valid and update users password in database
-        sql = "INSERT INTO users (username, hash) VALUES (?, ?)"
-        val = (request.form.get("username"), pass_hash)
+        sql = "INSERT INTO users (username, hash, question, answer) VALUES (?, ?, ?, ?)"
+        val = (request.form.get("username"), pass_hash, request.form.get("question"), request.form.get("answer"))
         result = c.execute(sql, val)
         if not result:
             return render_template("error.html", error_desc = "Invalid username")
         else:
-            user = c.execute("SELECT * FROM users WHERE username = ?",
-                              username=request.form.get("username"))
-                              session["user_id"] = user[0]["id"]
-                              return redirect("/")
+            c.execute("SELECT username FROM users WHERE username =:username", {"username": request.form.get("username")})
+            user = c.fetchone()
+            session["user_id"] = user[0]
+            return redirect("/")
 
     else:
         return render_template("register.html")
