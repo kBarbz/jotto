@@ -45,7 +45,7 @@ def index():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     # Set up use of database
-    file = "jotto-db"
+    file = "./jotto-db"
     conn = sqlite3.connect(file)
     c = conn.cursor()
 
@@ -72,7 +72,7 @@ def login():
             return render_template("error.html", error_desc = "Failed finding user")
 
         # Remember which user has logged in
-        session["user_id"] = user[1]
+        session["user_id"] = user[0]
         conn.close()
 
         # Redirect user to home page
@@ -101,7 +101,7 @@ def register():
     if request.method == "POST":
 
         # Set up use of database
-        file = "jotto-db"
+        file = "./jotto-db"
         conn = sqlite3.connect(file)
         c = conn.cursor()
 
@@ -126,14 +126,13 @@ def register():
         answer_hash = generate_password_hash(request.form.get("answer"))
 
         # Check to see if username is valid and update users password in database
-        c.execute("INSERT INTO users (username, hash, question, answer) VALUES (:username, :hash, :question, :answer)", {"username": request.form.get("username"), "hash": pass_hash, "question": request.form.get("question"), "answer": answer_hash})
-        """""""" TODO """"""""
+        result = c.execute("INSERT INTO users (username, hash, question, answer) VALUES (:username, :hash, :question, :answer)",
+                  {"username": request.form.get("username"), "hash": pass_hash, "question": request.form.get("question"), "answer": answer_hash})
+        conn.commit()
         if not result:
             return render_template("error.html", error_desc = "Invalid username")
         else:
-            conn = sqlite3.connect(file)
-            c = conn.cursor()
-            c.execute("SELECT username FROM users WHERE username =:username", {"username": request.form.get("username")})
+            c.execute("SELECT id FROM users WHERE username =:username", {"username": request.form.get("username")})
             user = c.fetchone()
             session["user_id"] = user[0]
             conn.close()
@@ -148,12 +147,12 @@ def register():
 def password():
 
     # Set up use of database
-    file = "jotto-db"
+    file = "./jotto-db"
     conn = sqlite3.connect(file)
     c = conn.cursor()
 
     if request.method == "POST":
-        c.execute("SELECT hash FROM users where id=:id", {"username": session["user_id"]})
+        c.execute("SELECT hash FROM users WHERE id=:id", {"id": session["user_id"]})
         user_hash = c.fetchone()
 
         # Ensure passwords were submitted
@@ -172,6 +171,7 @@ def password():
         else:
             pass_hash = generate_password_hash(request.form.get("confirmation"))
             c.execute("UPDATE users SET hash =:hash WHERE id =:id", {"hash": pass_hash, "id": session["user_id"]})
+            conn.commit()
             conn.close()
 
         return redirect('/')
