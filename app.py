@@ -72,7 +72,7 @@ def login():
             return render_template("error.html", error_desc = "Failed finding user")
 
         # Remember which user has logged in
-        session["user_id"] = user[0]
+        session["user_id"] = user[1]
         conn.close()
 
         # Redirect user to home page
@@ -123,11 +123,11 @@ def register():
 
         # Create hashof password and answer based on users input
         pass_hash = generate_password_hash(request.form.get("confirmation"))
-        answer_hash = generate_password_hash(request.form.get("answer"))
+        answer = request.form.get("answer").lower()
 
         # Check to see if username is valid and update users password in database
         result = c.execute("INSERT INTO users (username, hash, question, answer) VALUES (:username, :hash, :question, :answer)",
-                  {"username": request.form.get("username"), "hash": pass_hash, "question": request.form.get("question"), "answer": answer_hash})
+                  {"username": request.form.get("username"), "hash": pass_hash, "question": request.form.get("question"), "answer": answer})
         conn.commit()
         if not result:
             return render_template("error.html", error_desc = "Invalid username")
@@ -142,9 +142,9 @@ def register():
         return render_template("register.html")
 
 # Change password while logged in
-@app.route("/password", methods=["GET", "POST"])
+@app.route("/change_password", methods=["GET", "POST"])
 @login_required
-def password():
+def change_password():
 
     # Set up use of database
     file = "./jotto-db"
@@ -152,7 +152,7 @@ def password():
     c = conn.cursor()
 
     if request.method == "POST":
-        c.execute("SELECT hash FROM users WHERE id=:id", {"id": session["user_id"]})
+        c.execute("SELECT hash FROM users where id=:id", {"id": session["user_id"]})
         user_hash = c.fetchone()
 
         # Ensure passwords were submitted
@@ -163,9 +163,11 @@ def password():
         elif not request.form.get("confirmation"):
             return render_template("error.html", error_desc = "Empty confirmation field")
 
+        # Check if passwords match
         if request.form.get("new_password") != request.form.get("confirmation"):
             return render_template("error.html", error_desc = "Passwords don't match")
 
+        # Check if it's the correct password
         if not check_password_hash((user_hash[0]), request.form.get("old_password")):
             return render_template("error.html", error_desc = "Old password incorrect")
         else:
@@ -176,4 +178,73 @@ def password():
 
         return redirect('/')
     else:
-        return render_template("password.html")
+        return render_template("change_password.html")
+
+# Change password using Security Question
+@app.route("/reset_password", methods=["GET", "POST"])
+def reset_password():
+
+    # Set up use of database
+    file = "./jotto-db"
+    conn = sqlite3.connect(file)
+    c = conn.cursor()
+
+    if request.method == "POST":
+
+        # Ensure all fields were submitted
+        if not request.form.get("username"):
+            return render_template("error.html", error_desc = "Empty username field")
+        elif not request.form.get("answer"):
+            return render_template("error.html", error_desc = "Empty answer field")
+        elif not request.form.get("new_password"):
+            return render_template("error.html", error_desc = "Empty new password field")
+        elif not request.form.get("confirmation"):
+            return render_template("error.html", error_desc = "Empty confirmation field")
+
+        # Check if passwords match
+        if request.form.get("new_password") != request.form.get("confirmation"):
+            return render_template("error.html", error_desc = "Passwords don't match")
+
+        # Get users details
+        c.execute("SELECT * FROM users WHERE username =:username", {"username": request.form.get("username")})
+        user = c.fetchone()
+
+        # Check if answer is correct and update password
+        if user[4] == request.form.get("answer").lower():
+            pass_hash = generate_password_hash(request.form.get("confirmation"))
+            c.execute("UPDATE users SET hash =:hash WHERE id=:id", {"hash": pass_hash, "id": user[0]})
+            conn.commit()
+            conn.close()
+            return redirect("/")
+        else:
+            return render_template("error.html", error_desc = "Incorrect answer")
+
+    else:
+        return render_template("reset_password.html")
+
+@app.route("/check_question", methods=["GET"])
+def check_question():
+    """Return true if username available, else false, in JSON format"""
+
+    username = request.args.get("username")
+
+    # Set up use of database
+    file = "./jotto-db"
+    conn = sqlite3.connect(file)
+    c = conn.cursor()
+
+    c.execute("SELECT question FROM users WHERE username = :username", {"username": username})
+    question = c.fetchone()
+    if not question:
+        return jsonify("Input correct username")
+    if question[0] == "pet":
+        q = "Name of your first pet?"
+    elif question[0] == "maiden":
+        q = "Mother's maiden name?"
+    elif question[0] == "friend":
+        q = "Best friend's name?"
+    elif question[0] == "tv":
+        q = "Favourite TV Show?"
+    elif question[0] == "middle":
+        q = "Your middle name?"
+    return jsonify(q)
