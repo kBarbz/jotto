@@ -69,7 +69,7 @@ def login():
 
         # Ensure username exists and password is correct
         if user is None or not check_password_hash(user[2], request.form.get("password")):
-            return render_template("error.html", error_desc = "Failed finding user")
+            return render_template("error.html", error_desc = "Incorrect username or password")
 
         # Remember which user has logged in
         session["user_id"] = user[1]
@@ -248,3 +248,23 @@ def check_question():
     elif question[0] == "middle":
         q = "Your middle name?"
     return jsonify(q)
+
+@app.route("/check_login", methods=["GET"])
+def check_login():
+
+    # Get arguments from GET request
+    username = request.args.get("username")
+
+    # Set up use of database
+    file = "./jotto-db"
+    conn = sqlite3.connect(file)
+    c = conn.cursor()
+
+    # Grab users details
+    c.execute("SELECT * FROM users where username = :username", {"username": username})
+    user = c.fetchone()
+
+    if user is None:
+        return jsonify(False)
+    else:
+        return jsonify(True)
