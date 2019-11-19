@@ -7,10 +7,19 @@
 {% block main %}
   <div class="registration-page">
     <div class="form">
-      <form class="register" action="/register" method="post">
-        <input autocomplete="off" autofocus  type="text" name="username" placeholder="username"/>
-        <input type="password" name="password" placeholder="password"/>
-        <input type="password" name="confirmation" placeholder="confirm password"/>
+      <form class="register needs-validation" action="/register" method="post" novalidate>
+        <input autocomplete="off" autofocus class="form-control" type="text" name="username" placeholder="username" required>
+        <div class="invalid-feedback">
+          Please enter a username.
+        </div>
+        <input type="password" name="password" class="form-control" placeholder="password" required>
+        <div class="invalid-feedback">
+          Please enter a password.
+        </div>
+        <input type="password" name="confirmation" class="form-control" placeholder="confirm password" required>
+        <div class="invalid-feedback">
+          Please confirm password.
+        </div>
         <select id="register-select" class="form-control" name="question" required>
           <option disabled selected value="">Secret Question</option>
           <option value="pet">Name of your first pet?</option>
@@ -19,9 +28,34 @@
           <option value="tv">Favourite TV Show?</option>
           <option value="middle">Your middle name?</option>
         </select>
-        <input type="text" autocomplete="off" name="answer" placeholder="answer"/>
+        <input type="text" autocomplete="off" name="answer" placeholder="answer" required>
+        <div class="invalid-feedback">
+          Please enter an answer.
+        </div>
         <button class="btn btn-primary" type="submit">Register</button>
       </form>
     </div>
   </div>
+
+  <script>
+  // Script from https://getbootstrap.com/docs/4.3/components/forms/
+  // Example starter JavaScript for disabling form submissions if there are invalid fields
+  (function() {
+    'use strict';
+    window.addEventListener('load', function() {
+      // Fetch all the forms we want to apply custom Bootstrap validation styles to
+      var forms = document.getElementsByClassName('needs-validation');
+      // Loop over them and prevent submission
+      var validation = Array.prototype.filter.call(forms, function(form) {
+        form.addEventListener('submit', function(event) {
+          if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+            }
+          form.classList.add('was-validated');
+        }, false);
+      });
+    }, false);
+  })();
+  </script>
 {% endblock %}
