@@ -40,7 +40,7 @@ nav .nav-link:hover
   background: #fff;
   max-width: 500px;
   margin: 0 auto 20px;
-  padding: 60px;
+  padding: 30px 60px 60px 60px;
   text-align: center;
   box-shadow: 0 4px 0px #333;
   border-radius: 25px;
@@ -86,4 +86,9 @@ nav .nav-link:hover
   margin-top: -20px;
   margin-bottom: 15px;
   text-align: left;
+}
+
+h1
+{
+  padding-bottom: 30px;
 }

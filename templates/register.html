@@ -1,12 +1,13 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Log In
+    Register
 {% endblock %}
 
 {% block main %}
   <div class="registration-page">
     <div class="form">
+      <h1> Register </h1>
       <form class="register needs-validation" action="/register" method="post" novalidate>
         <input autocomplete="off" autofocus class="form-control" type="text" name="username" placeholder="username" required>
         <div class="invalid-feedback">
