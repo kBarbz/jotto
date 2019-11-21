@@ -7,9 +7,10 @@
 {% block main %}
 <script>
 let green_count = 0;
+let count = {{ letters }}
 function change_colour(letter)
 {
-  if (green_count < 5)
+  if (green_count < count)
   {
     if ($('span#' + letter).css('background-color') == 'rgb(238, 238, 238)')
     {
