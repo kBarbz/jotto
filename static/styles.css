@@ -126,3 +126,11 @@ span
   -ms-user-select: none;
   user-select: none;
 }
+#guessed-words
+{
+  text-align: center;
+}
+h3
+{
+  font-size: 15px;
+}

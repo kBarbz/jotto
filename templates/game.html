@@ -6,6 +6,15 @@
 
 {% block main %}
 <script>
+  // Stop user from clicking Enter
+  $(document).ready(function() {
+  $(window).keydown(function(event){
+    if(event.keyCode == 13) {
+      event.preventDefault();
+      return false;
+    }
+  });
+});
 let green_count = 0;
 let count = {{ letters }}
 function change_colour(letter)
@@ -96,8 +105,15 @@ function change_colour(letter)
 
           </div>
         </div>
-        <div class="col-4" id="guess-field">
-          Guessed words
+        <div class="col-8" id="guess-field">
+          <div id="guess-input">
+            <form>
+              <input type="text" maxlength="{{ letters }}" autocomplete="off" autofocus name="guess" placeholder="Guess the word" id="guess">
+            </form>
+          </div>
+          <div id="guesses">
+            <h3 style="text-align: center"> Guessed words </h3>
+          </div>
         </div>
       </div>
   </div>
