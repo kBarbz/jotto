@@ -106,8 +106,13 @@ h1
 }
 #letterboard
 {
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
+.found
+{
+  background-color: #fff;
+}
+
 span
 {
   display: inline-block;

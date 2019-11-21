@@ -6,20 +6,48 @@
 
 {% block main %}
 <script>
+let green_count = 0;
 function change_colour(letter)
 {
-if ($('span#' + letter).css('background-color') == 'rgb(238, 238, 238)')
-{
-  $('span#' + letter).css('background-color', 'rgb(230, 0, 0)');
-}
-else if ($('span#' + letter).css('background-color') == 'rgb(230, 0, 0)')
-{
-  $('span#' + letter).css('background-color', 'rgb(50, 205, 50)');
-}
-else if ($('span#' + letter).css('background-color') == 'rgb(50, 205, 50)')
-{
-  $('span#' + letter).css('background-color', 'rgb(238, 238, 238)');
-}
+  if (green_count < 5)
+  {
+    if ($('span#' + letter).css('background-color') == 'rgb(238, 238, 238)')
+    {
+      $('span#' + letter).css('background-color', 'rgb(230, 0, 0)');
+    }
+    else if ($('span#' + letter).css('background-color') == 'rgb(230, 0, 0)')
+    {
+      $('span#' + letter).css('background-color', 'rgb(50, 205, 50)');
+      upper = letter.toUpperCase();
+      $('#found-letters').append("<span class='found' id='found-"+upper+"'>"+upper+"</span>");
+      green_count++;
+    }
+    else if ($('span#' + letter).css('background-color') == 'rgb(50, 205, 50)')
+    {
+      $('span#' + letter).css('background-color', 'rgb(238, 238, 238)');
+      upper = letter.toUpperCase();
+      $('span').remove("#found-"+upper);
+      green_count--;
+    }
+  }
+  else
+  {
+    if ($('span#' + letter).css('background-color') == 'rgb(238, 238, 238)')
+    {
+      $('span#' + letter).css('background-color', 'rgb(230, 0, 0)');
+    }
+    else if ($('span#' + letter).css('background-color') == 'rgb(230, 0, 0)')
+    {
+      $('span#' + letter).css('background-color', 'rgb(238, 238, 238)');
+    }
+    else if ($('span#' + letter).css('background-color') == 'rgb(50, 205, 50)')
+    {
+      $('span#' + letter).css('background-color', 'rgb(238, 238, 238)');
+      upper = letter.toUpperCase();
+      $('span').remove("#found-"+upper);
+      green_count--;
+    }
+  }
 }
 </script>
 
@@ -61,8 +89,11 @@ else if ($('span#' + letter).css('background-color') == 'rgb(50, 205, 50)')
 <div class="row">
   <div class="col-8 game-window">
       <div class="row">
-        <div class="col-4" id="found-letters">
-          Found letters
+        <div class="col-4">
+          <h3> Found letters </h3>
+          <div id="found-letters">
+
+          </div>
         </div>
         <div class="col-4" id="guess-field">
           Guessed words
