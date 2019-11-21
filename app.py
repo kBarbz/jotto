@@ -5,6 +5,7 @@ from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
 import sqlite3
+import random
 
 # Configure application **CS50 code**
 app = Flask(__name__)
@@ -39,11 +40,21 @@ def login_required(f):
 @app.route("/")
 @login_required
 def index():
-    return render_template("index.html")
+
+    # Set up use of database
+    file = "./jotto-db"
+    conn = sqlite3.connect(file)
+    c = conn.cursor()
+
+    c.execute("SELECT username FROM users WHERE id =:id", {"id": session["user_id"]})
+    username = c.fetchone()[0]
+    conn.close()
+    return render_template("index.html", username = username)
 
 # Login page and process **CS50 code**
 @app.route("/login", methods=["GET", "POST"])
 def login():
+
     # Set up use of database
     file = "./jotto-db"
     conn = sqlite3.connect(file)
@@ -72,7 +83,7 @@ def login():
             return render_template("error.html", error_desc = "Incorrect username or password")
 
         # Remember which user has logged in
-        session["user_id"] = user[1]
+        session["user_id"] = user[0]
         conn.close()
 
         # Redirect user to home page
@@ -225,7 +236,6 @@ def reset_password():
 @app.route("/check_question", methods=["GET"])
 def check_question():
     """Return true if username available, else false, in JSON format"""
-
     username = request.args.get("username")
 
     # Set up use of database
@@ -268,3 +278,40 @@ def check_login():
         return jsonify(False)
     else:
         return jsonify(True)
+
+@app.route("/game", methods=["GET", "POST"])
+@login_required
+def game():
+
+    # Set up use of database
+    file = "./jotto-db"
+    conn = sqlite3.connect(file)
+    c = conn.cursor()
+
+    if request.method == "POST":
+        lang = request.form.get("language")
+        word_length = request.form.get("letters")
+
+        # Correct number of letters to access db with
+        if lang == "english":
+            letters = int(word_length) + 1
+            lang = "isograms"
+        else:
+            letters = int(word_length) + 2
+
+
+        # Get total number of words in specified language list
+        c.execute("SELECT COUNT(id) FROM "+lang+" WHERE length = :letters", {"letters": letters})
+        val = c.fetchone()[0]
+
+        rand = random.randint(1, val+1)
+
+        c.execute("SELECT word FROM "+lang+" WHERE length = :letters ORDER BY RANDOM() LIMIT 1", {"letters": letters})
+        session["secret"] = c.fetchone()[0]
+        session["letters"] = word_length
+        session["lang"] = lang
+
+        return render_template("game.html", letters = session["letters"])
+
+    else:
+        return render_template("index.html")

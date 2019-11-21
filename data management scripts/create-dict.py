@@ -1,29 +1,25 @@
 import sys
+import re
 
 def main():
 
+    dict = []
+
     try:
-        with open("enable2k.txt", "r") as file:
-            file1 = file.read()
+        with open("portuguese.txt", "r") as file:
+            line = file.readline()
+            while line:
+                line = re.sub('[0-9]', '', line)
+                line = line.strip(' ')
+                dict.append(line)
+                line = file.readline()
+
     except IOError:
         sys.exit("Could not read file1")
-    try:
-        with open("sowpods.txt", "r") as file:
-            file2 = file.read()
-    except IOError:
-        sys.exit("Could not read file2")
-    try:
-        with open("twl06.txt", "r") as file:
-            file3 = file.read()
-    except IOError:
-        sys.exit("Could not read file3")
 
     try:
-        with open("mydict.txt", "a") as file:
-            file.write(file1)
-            file.write(file2)
-            file.write(file3)
-
+        with open("portuguese-dict.txt", "a") as file:
+            file.writelines(dict)
     except IOError:
         sys.exit("could not append")
 

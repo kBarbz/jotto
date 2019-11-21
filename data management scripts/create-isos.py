@@ -5,7 +5,7 @@ def main():
     iso = []
 
     try:
-        with open("mydict.txt", "r") as file:
+        with open("portuguese-dict.txt", "r") as file:
             line = file.readline()
             while line:
                 if is_isogram(line):
@@ -15,7 +15,7 @@ def main():
         sys.exit("Could not read file1")
 
     try:
-        with open('myiso.txt', 'w') as file:
+        with open('portuguese-iso.txt', 'w') as file:
             file.writelines(iso)
     except IOError:
         sys.exit("could not append")
@@ -29,6 +29,10 @@ def is_isogram(word):
     letter_list = []
 
     for letter in clean_word:
+
+        # Remove apostrophes
+        if letter == "\'":
+            return False
 
         # If letter is an alphabet then only check
         if letter.isalpha():

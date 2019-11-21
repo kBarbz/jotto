@@ -9,7 +9,7 @@ def main():
 
     iso = []
     try:
-        with open("myiso.txt", "r") as file:
+        with open("indonesian-iso.txt", "r") as file:
             line = file.readline()
             while line:
                 iso.append(line)
@@ -17,10 +17,10 @@ def main():
     except IOError:
         sys.exit("Could not read file1")
 
-    c.execute('CREATE TABLE isograms (id INTEGER PRIMARY KEY, word TEXT NOT NULL, length INTEGER NOT NULL)')
 
     for words in iso:
-        sql = "INSERT INTO isograms (word, length) VALUES (?, ?)"
+        words = words.decode("utf-8")
+        sql = "INSERT INTO indonesian (word, length) VALUES (?, ?)"
         val = (words, len(words))
         c.execute(sql, val)
 

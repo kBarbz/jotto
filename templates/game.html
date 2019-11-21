@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Start Game
+{% endblock %}
+
+{% block main %}
+<script>
+function change_colour(letter)
+{
+if ($('span#' + letter).css('background-color') == 'rgb(238, 238, 238)')
+{
+  $('span#' + letter).css('background-color', 'rgb(230, 0, 0)');
+}
+else if ($('span#' + letter).css('background-color') == 'rgb(230, 0, 0)')
+{
+  $('span#' + letter).css('background-color', 'rgb(50, 205, 50)');
+}
+else if ($('span#' + letter).css('background-color') == 'rgb(50, 205, 50)')
+{
+  $('span#' + letter).css('background-color', 'rgb(238, 238, 238)');
+}
+}
+</script>
+
+
+<h1 style="text-align: center"> JOTTO </h1>
+<div class="row" id="letterboard">
+  <div class="col-3" id="word-length">
+    Word Length: {{ letters }}
+  </div>
+  <div class="col-9" id="letter-board" style="cursor: pointer;">
+    <span id="a" onclick="change_colour('a')">A</span>
+    <span id="b" onclick="change_colour('b')">B</span>
+    <span id="c" onclick="change_colour('c')">C</span>
+    <span id="d" onclick="change_colour('d')">D</span>
+    <span id="e" onclick="change_colour('e')">E</span>
+    <span id="f" onclick="change_colour('f')">F</span>
+    <span id="g" onclick="change_colour('g')">G</span>
+    <span id="h" onclick="change_colour('h')">H</span>
+    <span id="i" onclick="change_colour('i')">I</span>
+    <span id="j" onclick="change_colour('j')">J</span>
+    <span id="k" onclick="change_colour('k')">K</span>
+    <span id="l" onclick="change_colour('l')">L</span>
+    <span id="m" onclick="change_colour('m')">M</span>
+    <span id="n" onclick="change_colour('n')">N</span>
+    <span id="o" onclick="change_colour('o')">O</span>
+    <span id="p" onclick="change_colour('p')">P</span>
+    <span id="q" onclick="change_colour('q')">Q</span>
+    <span id="r" onclick="change_colour('r')">R</span>
+    <span id="s" onclick="change_colour('s')">S</span>
+    <span id="t" onclick="change_colour('t')">T</span>
+    <span id="u" onclick="change_colour('u')">U</span>
+    <span id="v" onclick="change_colour('v')">V</span>
+    <span id="w" onclick="change_colour('w')">W</span>
+    <span id="x" onclick="change_colour('x')">X</span>
+    <span id="y" onclick="change_colour('y')">Y</span>
+    <span id="z" onclick="change_colour('z')">Z</span>
+  </div>
+</div>
+<div class="row">
+  <div class="col-8 game-window">
+      <div class="row">
+        <div class="col-4" id="found-letters">
+          Found letters
+        </div>
+        <div class="col-4" id="guess-field">
+          Guessed words
+        </div>
+      </div>
+  </div>
+  <div class="col-4">
+    <h2> Instructions </h2>
+    <p id="instructions">
+      Type in a letter to guess the word.
+      <br>
+      <br>
+      Click the letters on the letterboard mark off right or wrong letters.
+      <br>
+      <br>
+      Good luck!
+    </p>
+  </div>
+</div>
+{% endblock %}

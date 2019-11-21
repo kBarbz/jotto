@@ -7,10 +7,48 @@
 {% block main %}
 <h1 style="text-align: center"> JOTTO </h1>
 <div class="row">
-  <div class="col-8"></div>
+  <div class="col-8" id="shrink-game-settings">
+  <div class="col-8 game-window">
+    <h2> Game Selection </h2>
+    <form id="game-form" class="needs-validation" action="/game" method="post" novalidate>
+    <select id="language-select" class="form-control" name="language" required>
+      <option disabled selected value="">Language</option>
+      <option value="english">English</option>
+      <option value="french">French</option>
+      <option value="german">German</option>
+      <option value="indonesian">Indonesian</option>
+      <option value="italian">Italian</option>
+    </select>
+    <div class="space"></div>
+    <select id="letters-select" class="form-control" name="letters" required>
+      <option disabled selected value="">Number of letters</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+      <option value="7">7</option>
+    </select>
+    <p id="rdy-msg"> Are you ready to begin, {{ username}}? </p>
+      <button class="btn btn-primary" type="submit">start game</button>
+      </form>
+  </div>
+  </div>
   <div class="col-4">
     <h2> Instructions </h2>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean elementum velit vel felis ornare semper. Mauris eget sapien metus. Vestibulum ullamcorper nisi a lobortis commodo. Aenean elementum purus ac pharetra molestie. Integer blandit fermentum pretium. Duis tristique ac nisl in congue. Proin nec leo arcu. Nulla vitae risus in massa vehicula venenatis non eget augue. Aenean nec augue ac tortor dapibus imperdiet. Maecenas eget dui a quam semper dignissim sit amet in nulla.</p>
-  </div>
-</div>
+    <p id="instructions">
+      Your goal is to guess the <b>secret word!</b>
+      <br>
+      <br>
+      You can get closer to achieving this goal by <b>guessing words until you get the right one.</b>
+      <br>
+      Each time you guess the wrong word, we will tell you <b>how many of those letters match the secret word.</b>
+      <br>
+      However, we won't tell you which letters match!  You'll have to figure that out by yourself.
+      <br>
+      <br>
+      You may use the letter-board to mark off which letters you think are right or wrong and eventually narrow it down to only the letters that make up your word.
+      <br>
+      <br>
+      <b>NOTE:</b> No words with letters that repeat are allowed.
+    </p>
 {% endblock %}

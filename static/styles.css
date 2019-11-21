@@ -33,7 +33,7 @@ nav .nav-link:hover
   border-radius: 25px;
 }
 
-.form
+.form, .game-window
 {
   position: relative;
   z-index: 1;
@@ -91,4 +91,33 @@ nav .nav-link:hover
 h1
 {
   padding-bottom: 30px;
+}
+#game-form
+{
+  padding-top: 20px;
+}
+#rdy-msg
+{
+  padding-top: 20px;
+}
+#instructions
+{
+  font-size: 14px;
+}
+#letterboard
+{
+  margin-bottom: 15px;
+}
+span
+{
+  display: inline-block;
+  width: 15px;
+  text-align: center;
+  background-color: rgb(238, 238, 238);
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
