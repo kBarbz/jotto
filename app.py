@@ -315,3 +315,13 @@ def game():
 
     else:
         return render_template("index.html")
+
+@app.route("/guess", methods=["GET"])
+def guess():
+
+    guess = str(request.args.get("guess"))
+    for letter in guess:
+        if not letter.isalpha():
+            return jsonify(False)
+
+    return jsonify(guess)

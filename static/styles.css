@@ -118,7 +118,6 @@ span
   display: inline-block;
   width: 15px;
   text-align: center;
-  background-color: rgb(238, 238, 238);
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -126,11 +125,21 @@ span
   -ms-user-select: none;
   user-select: none;
 }
-#guessed-words
+.lb-letters
 {
-  text-align: center;
+  background-color: rgb(238, 238, 238);
+}
+.guess-letters
+{
+  background-color: rgb(255, 255, 255);
 }
 h3
 {
   font-size: 15px;
+}
+#guess
+{
+  padding: 10px;
+  margin-bottom: 5px;
+  width: 100%;
 }
