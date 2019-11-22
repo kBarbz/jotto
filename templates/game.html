@@ -68,21 +68,50 @@ function change_colour(letter)
   }
 }
 
+// Add guessed words
+let guessed_words = [];
+function previous_word(word)
+{
+  for (let i = 0, len = guessed_words.length; i < len; i++)
+  {
+    if (word == guessed_words[i])
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
 function check_for_guess()
 {
-  if($('input').val().length == {{ letters }})
+  guess = $('input').val()
+    if (guess.length == {{ letters }})
     {
-        $.get("/guess", {guess: $('input').val()},
+        $.get("/guess", {guess: guess},
           (function(data)
           {
               if (data)
               {
-                for (let i = 0; i < {{ letters }}; i++)
+                if (previous_word(guess))
                 {
-                  let on_click = "\""+data[i]+"\""
-                  $('#guesses').append("<span onclick='change_colour("+on_click+")' class='guess-letters' id='guess-"+data[i]+"'>"+data[i]+"</span>");
+                  guessed_words.push(guess);
+                  for (let i = 0; i < {{ letters }}; i++)
+                  {
+                    let on_click = "\""+data[i]+"\""
+                    $('#guesses').append("<span onclick='change_colour("+on_click+")' class='guess-letters' id='guess-"+data[i]+"'>"+data[i]+"</span>");
+                  }
+                  $('#guesses').append("<br>");
+                  $('#guess-error').html("");
                 }
-                $('#guesses').append("<br>");
+                else
+                {
+                  $('#guess-error').html("You've already guessed that word");
+                  $('input').val('');
+                }
+              }
+              else
+              {
+                $('#guess-error').html("Please input a {{ letters }} letter word")
               }
           })
         );
@@ -140,6 +169,9 @@ function check_for_guess()
             <form>
               <input type="text" maxlength="{{ letters }}" autocomplete="off" autofocus name="guess" placeholder="Guess the word" id="guess" onkeyup="check_for_guess()">
             </form>
+          </div>
+          <div id="guess-error">
+
           </div>
           <div id="guesses">
 
