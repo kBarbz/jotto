@@ -317,7 +317,7 @@ def game():
     else:
         return render_template("index.html")
 
-@app.route("/guess", methods=["GET"])
+@app.route("/guess")
 def guess():
 
     guess = str(request.args.get("guess"))
@@ -342,5 +342,9 @@ def guess():
             if secret_letter == letter:
                 count = count + 1
 
-
     return jsonify(guess + str(count))
+
+@app.route("/win",  methods=["GET", "POST"])
+def win():
+
+    return render_template("index.html")

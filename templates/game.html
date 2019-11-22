@@ -127,7 +127,12 @@ let guess_count = 0;function check_for_guess()
                   $("#guess").removeAttr("disabled");
                   document.querySelector('input').focus()
                   if (data[{{ letters }}] == {{ letters }})
+                  {
                     $('#guess-error').html("You Win!");
+                    $.post('/win')
+                    let base_url = window.location.origin;
+                    window.location.replace(base_url + "/win")
+                  }
                 }
                 else
                 {
