@@ -68,6 +68,23 @@ function change_colour(letter)
   }
 }
 
+function update_colour(letter)
+{
+    if ($('span#' + letter).css('background-color') == 'rgb(238, 238, 238)')
+    {
+      $('span#guess-' + letter).css('background-color', 'rgb(255, 255, 255)');
+    }
+    else if  ($('span#' + letter).css('background-color') == 'rgb(230, 0, 0)')
+    {
+      $('span#guess-' + letter).css('background-color', 'rgb(230, 0, 0)');
+    }
+    else if ($('span#' + letter).css('background-color') == 'rgb(50, 205, 50)')
+    {
+      $('span#guess-' + letter).css('background-color', 'rgb(50, 205, 50)');
+    }
+}
+
+
 // Add guessed words
 let guessed_words = [];
 function previous_word(word)
@@ -82,11 +99,12 @@ function previous_word(word)
   return true;
 }
 
-function check_for_guess()
+let guess_count = 0;function check_for_guess()
 {
   guess = $('input').val()
     if (guess.length == {{ letters }})
     {
+      $("#guess").attr("disabled", "disabled");
         $.get("/guess", {guess: guess},
           (function(data)
           {
@@ -95,29 +113,44 @@ function check_for_guess()
                 if (previous_word(guess))
                 {
                   guessed_words.push(guess);
+                  guess_count++;
+                  $('#guesses').append("<br>");
+                  $('#guesses').prepend("<div id='guess-"+guess_count+"'></div>")
                   for (let i = 0; i < {{ letters }}; i++)
                   {
                     let on_click = "\""+data[i]+"\""
-                    $('#guesses').append("<span onclick='change_colour("+on_click+")' class='guess-letters' id='guess-"+data[i]+"'>"+data[i]+"</span>");
+                    $('#guess-'+guess_count).append("<span onclick='change_colour("+on_click+")' class='guess-letters' id='guess-"+data[i]+"'>"+data[i].toUpperCase()+"</span>");
+                    update_colour(data[i]);
                   }
-                  $('#guesses').append("<br>");
+                  $('#guess-'+guess_count).append("<span class='guess-letters'>"+data[{{ letters }}]+"</span>");
                   $('#guess-error').html("");
+                  $("#guess").removeAttr("disabled");
+                  document.querySelector('input').focus()
+                  if (data[{{ letters }}] == {{ letters }})
+                    $('#guess-error').html("You Win!");
                 }
                 else
                 {
                   $('#guess-error').html("You've already guessed that word");
-                  $('input').val('');
+                  $("#guess").removeAttr("disabled");
+                  document.querySelector('input').focus()
                 }
               }
               else
               {
                 $('#guess-error').html("Please input a {{ letters }} letter word")
+                $('input').val('');
+                $("#guess").removeAttr("disabled");
+                document.querySelector('input').focus()
               }
           })
         );
       $('input').val('');
+      document.querySelector('input').focus()
     }
 }
+
+
 </script>
 
 

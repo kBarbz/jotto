@@ -6,6 +6,7 @@ from werkzeug.exceptions import default_exceptions, HTTPException, InternalServe
 from werkzeug.security import check_password_hash, generate_password_hash
 import sqlite3
 import random
+import time
 
 # Configure application **CS50 code**
 app = Flask(__name__)
@@ -307,7 +308,7 @@ def game():
         rand = random.randint(1, val+1)
 
         c.execute("SELECT word FROM "+lang+" WHERE length = :letters ORDER BY RANDOM() LIMIT 1", {"letters": letters})
-        session["secret"] = c.fetchone()[0]
+        session["secret"] = str(c.fetchone()[0])
         session["letters"] = word_length
         session["lang"] = lang
 
@@ -324,4 +325,22 @@ def guess():
         if not letter.isalpha():
             return jsonify(False)
 
-    return jsonify(guess)
+    # Set up use of database
+    file = "./jotto-db"
+    conn = sqlite3.connect(file)
+    c = conn.cursor()
+
+    c.execute("SELECT word FROM "+session["lang"]+" WHERE word = :word", {"word": guess})
+    result = c.fetchone()
+    if result == None:
+        return jsonify(False)
+
+    count = 0;
+    result = str(result[0])
+    for letter in result:
+        for secret_letter in session["secret"]:
+            if secret_letter == letter:
+                count = count + 1
+
+
+    return jsonify(guess + str(count))
