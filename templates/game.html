@@ -99,7 +99,8 @@ function previous_word(word)
   return true;
 }
 
-let guess_count = 0;function check_for_guess()
+let guess_count = 0;
+function check_for_guess()
 {
   guess = $('input').val()
     if (guess.length == {{ letters }})
@@ -129,9 +130,9 @@ let guess_count = 0;function check_for_guess()
                   if (data[{{ letters }}] == {{ letters }})
                   {
                     $('#guess-error').html("You Win!");
-                    $.post('/win')
-                    let base_url = window.location.origin;
-                    window.location.replace(base_url + "/win")
+                    $("#guess").attr("disabled", "disabled");
+                    $("#guess").attr("disabled", "disabled");
+                    $('#guess-error').append('<form action="/win" method="post"><input type="hidden" id="win" name="win" value="'+guess+'"/><input type="hidden" name="guess_count" value="'+guess_count+'"/><button class="btn btn-primary" type="submit">show score</button></form>')
                   }
                 }
                 else
@@ -162,7 +163,7 @@ let guess_count = 0;function check_for_guess()
 <h1 style="text-align: center"> JOTTO </h1>
 <div class="row" id="letterboard">
   <div class="col-3" id="word-length">
-    Word Length: {{ letters }}
+    Word Length: {{ letters }} {{ word }}
   </div>
   <div class="col-9" id="letter-board" style="cursor: pointer;">
     <span id="a" class="lb-letters" onclick="change_colour('a')">A</span>

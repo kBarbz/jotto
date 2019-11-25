@@ -312,10 +312,19 @@ def game():
         session["letters"] = word_length
         session["lang"] = lang
 
-        return render_template("game.html", letters = session["letters"])
+        return render_template("game.html", letters = session["letters"], word =  session["secret"])
 
     else:
-        return render_template("index.html")
+        # Set up use of database
+        file = "./jotto-db"
+        conn = sqlite3.connect(file)
+        c = conn.cursor()
+
+        c.execute("SELECT username FROM users WHERE id =:id", {"id": session["user_id"]})
+        username = c.fetchone()[0]
+        conn.close()
+
+        return render_template("index.html" , username = username)
 
 @app.route("/guess")
 def guess():
@@ -344,7 +353,19 @@ def guess():
 
     return jsonify(guess + str(count))
 
-@app.route("/win",  methods=["GET", "POST"])
+@app.route("/win",  methods=["POST"])
 def win():
 
-    return render_template("index.html")
+    win = str(request.form.get("win"))
+    guess_count = int(request.form.get("guess_count"))
+
+    # Set up use of database
+    file = "./jotto-db"
+    conn = sqlite3.connect(file)
+    c = conn.cursor()
+
+    c.execute("SELECT username FROM users WHERE id =:id", {"id": session["user_id"]})
+    username = c.fetchone()[0]
+    conn.close()
+
+    return render_template("win.html", win = win, username = username, guess_count = guess_count)
