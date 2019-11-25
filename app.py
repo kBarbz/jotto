@@ -363,9 +363,37 @@ def win():
     file = "./jotto-db"
     conn = sqlite3.connect(file)
     c = conn.cursor()
-
     c.execute("SELECT username FROM users WHERE id =:id", {"id": session["user_id"]})
     username = c.fetchone()[0]
-    conn.close()
 
+    c.execute("INSERT INTO leaderboard (username, word, letters, lang, guesses) VALUES (:username, :word, :letters, :lang, :guesses)", {"username": username, "word": session["secret"], "letters": session["letters"], "lang": session["lang"], "guesses": guess_count})
+    conn.commit()
+    conn.close()
     return render_template("win.html", win = win, username = username, guess_count = guess_count)
+
+@app.route("/leaderboard")
+def leaderboard():
+
+    # Set up use of database
+    file = "./jotto-db"
+    conn = sqlite3.connect(file)
+    c = conn.cursor()
+
+    lang = request.args.get("lang")
+    letters = request.args.get("letters")
+
+    c.execute("SELECT COUNT(username) FROM leaderboard WHERE lang = :lang GROUP BY username ORDER BY COUNT(username) DESC LIMIT 10", {"lang": lang})
+    total_wins = c.fetchall()
+    total_wins = [x[0] for x in total_wins]
+    c.execute("SELECT username FROM leaderboard WHERE lang = :lang GROUP BY username ORDER BY COUNT(username) DESC LIMIT 10", {"lang": lang})
+    user = c.fetchall()
+    user = [x[0] for x in user]
+
+    return render_template("leaderboard.html", total_wins = total_wins, user = user)
+
+@app.route("/lose",  methods=["POST"])
+def lose():
+
+    lose = str(request.form.get("lose"))
+
+    return render_template("lose.html", lose = lose)

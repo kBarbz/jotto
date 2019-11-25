@@ -8,6 +8,7 @@
 <script>
   // Stop user from clicking Enter
   $(document).ready(function() {
+  document.getElementById("lose").value = "{{ word }}";
   $(window).keydown(function(event){
     if(event.keyCode == 13) {
       event.preventDefault();
@@ -127,7 +128,7 @@ function check_for_guess()
                   $('#guess-error').html("");
                   $("#guess").removeAttr("disabled");
                   document.querySelector('input').focus()
-                  if (data[{{ letters }}] == {{ letters }})
+                  if (guess == '{{session["secret"]}}')
                   {
                     $('#guess-error').html("You Win!");
                     $("#guess").attr("disabled", "disabled");
@@ -156,14 +157,13 @@ function check_for_guess()
     }
 }
 
-
 </script>
 
 
 <h1 style="text-align: center"> JOTTO </h1>
 <div class="row" id="letterboard">
   <div class="col-3" id="word-length">
-    Word Length: {{ letters }} {{ word }}
+    Word Length: {{ letters }}
   </div>
   <div class="col-9" id="letter-board" style="cursor: pointer;">
     <span id="a" class="lb-letters" onclick="change_colour('a')">A</span>
@@ -202,6 +202,9 @@ function check_for_guess()
           <div id="found-letters">
 
           </div>
+          <form action="/lose" method="post">
+            <button class="btn btn-primary" type="submit" name="lose" id="lose" value="">give up</button>
+          </form>
         </div>
         <div class="col-8" id="guess-field">
           <div id="guess-input">

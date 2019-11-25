@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Log In
+{% endblock %}
+
+{% block main %}
+<div class="lose-page">
+  <div class="form">
+      <h1> Oops! </h1>
+    <p>Your word was {{ lose }}.</p>
+    <br>
+    <p>That was tough one!  Click play again to get a new word.<p>
+    <form action="/" method="get">
+      <button class="btn btn-primary" type="submit">play again</button>
+    </form>
+    <form action="/leaderboard" method="get">
+      <button class="btn btn-primary" type="submit">leaderboard</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
